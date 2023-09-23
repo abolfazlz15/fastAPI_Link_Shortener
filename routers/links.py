@@ -18,3 +18,10 @@ async def get_links(skip: int = Query(0, alias="page", description="Page number"
     links = collection_name.find().skip(skip).limit(limit)
     return LinkList(links=[LinkDetail(**link) for link in links])
 
+
+@router.post('/link/create')
+async def create_link(link_address: CreateLink, request: Request):
+
+    short_link = create_short_link_record(link_address.link)
+    return {'result': f'http://{request.client.host}:8000/{short_link}'}
+
