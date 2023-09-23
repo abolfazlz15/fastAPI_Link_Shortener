@@ -25,3 +25,12 @@ async def create_link(link_address: CreateLink, request: Request):
     short_link = create_short_link_record(link_address.link)
     return {'result': f'http://{request.client.host}:8000/{short_link}'}
 
+
+@router.get('/{short_link}')
+async def redirect_to_original_link(short_link: str):
+    result = collection_name.find_one({'short_link': short_link})
+    if result:
+        original_link = result.get('link')
+        return RedirectResponse(url=original_link)
+    else:
+        raise HTTPException(status_code=404, detail="Short link not found")
